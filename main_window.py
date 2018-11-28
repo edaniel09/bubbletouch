@@ -10,10 +10,10 @@ import sys
 
 # import some PyQt5 modules
 from PyQt5.QtWidgets import QApplication
-from PyQt5.QtWidgets import QWidget
+from PyQt5.QtWidgets import QWidget, QFrame
 from PyQt5.QtGui import QImage
 from PyQt5.QtGui import QPixmap
-from PyQt5.QtCore import QTimer
+from PyQt5.QtCore import QTimer, QPropertyAnimation, QRect
 
 # import Opencv module
 import cv2
@@ -28,12 +28,18 @@ class MainWindow(QWidget):
         self.ui = Ui_Form()
         self.ui.setupUi(self)
 
+        self.frame = QFrame(self)
+        self.frame.setFrameStyle(QFrame.Panel | QFrame.Raised)
+        self.frame.setGeometry(150, 30, 100, 100)
+
         # create a timer
         self.timer = QTimer()
         # set timer timeout callback function
         self.timer.timeout.connect(self.viewCam)
         # set control_bt callback clicked  function
         self.ui.control_bt.clicked.connect(self.controlTimer)
+        self.ui.control_bt.clicked.connect(self.animation)
+
 
     # view camera
     def viewCam(self):
@@ -67,6 +73,13 @@ class MainWindow(QWidget):
             self.cap.release()
             # update control_bt text
             self.ui.control_bt.setText("Start")
+
+    def animation(self):
+        self.anim = QPropertyAnimation(self.frame, b"geometry")
+        self.anim.setDuration(1000)
+        self.anim.setStartValue(QRect(0, 0, 100, 30))
+        self.anim.setEndValue(QRect(250, 250, 100, 30))
+        self.anim.start()
 
 
 if __name__ == '__main__':
